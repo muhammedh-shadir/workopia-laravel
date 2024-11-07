@@ -118,10 +118,9 @@ class JobController extends Controller
         ]);
 
         if ($request->hasFile('company_logo')) {
-
-            $deletepath = 'public/logos/' . basename($job->company_logo);
-            Storage::delete($deletepath);
-
+            if ($job->company_logo) {
+                Storage::disk('public')->delete($job->company_logo);
+            }
             $path = $request->file('company_logo')->store('logos', 'public');
             $validatedData['company_logo'] = $path;
         }
@@ -139,7 +138,8 @@ class JobController extends Controller
         $this->authorize('delete', $job);
 
         if ($job->company_logo) {
-            Storage::delete('public/logos' . $job->company_logo);
+            // Storage::delete('public/logos' . $job->company_logo);
+            Storage::disk('public')->delete($job->company_logo);
         }
 
         if (request()->query('from') == 'dashboard') {
